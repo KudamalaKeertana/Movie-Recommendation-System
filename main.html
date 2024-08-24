@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        /* Add your CSS styling here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Recommendation System</h1>
+        <label for="genre">Enter Genre:</label>
+        <input type="text" id="genre" name="genre" placeholder="e.g., Action, Comedy, Drama">
+        <br>
+        <br>
+        <button onclick="getRecommendations()">Submit</button>
+        <div id="recommendations"></div>
+    </div>
+
+    <script>
+        function getRecommendations() {
+            var selectedGenre = document.getElementById("genre").value;
+            
+            // Make AJAX request to the Python backend
+            fetch('/recommendations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "genres": selectedGenre }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayRecommendations(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function displayRecommendations(recommendations) {
+            var recommendationsContainer = document.getElementById("recommendations");
+            recommendationsContainer.innerHTML = "<h2>Recommended Movies:</h2>";
+            if (recommendations.length === 0) {
+                recommendationsContainer.innerHTML += "<p>No recommendations found.</p>";
+            } else {
+                var ul = document.createElement("ul");
+                recommendations.forEach(function (movie) {
+                    var li = document.createElement("li");
+                    li.textContent = movie;
+                    ul.appendChild(li);
+                });
+                recommendationsContainer.appendChild(ul);
+            }
+        }
+    </script>
+</body>
+</html>
